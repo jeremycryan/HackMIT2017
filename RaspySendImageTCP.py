@@ -9,7 +9,7 @@ import cv2
 # Connect a client socket to my_server:8000 (change my_server to the
 # hostname of your server)
 client_socket = socket.socket()
-client_socket.connect(('127.0.0.1', 50001))
+client_socket.connect(('169.254.130.102', 50001))
 
 # Make a file-like object out of the connection
 connection = client_socket.makefile('wb')
