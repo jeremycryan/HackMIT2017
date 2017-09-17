@@ -5,19 +5,16 @@ import socket
 backlog = 1
 size = 1024
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(('192.20.20.2', 50001))
-s.listen(backlog)
+s.connect(('127.0.0.1', 50000))
 try:
     print ("is waiting")
-    client, address = s.accept()
 
     while 1:
-        data = client.recv(size)
+        data = s.recv(size)
         if data:
             print (data)
-            client.send(data)
+            s.send(data)
 
-except:
+finally:
     print("closing socket")
-    client.close()
     s.close()
