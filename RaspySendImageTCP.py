@@ -1,3 +1,5 @@
+# Adapted from http://picamera.readthedocs.io/en/release-1.9/recipes1.html#capturing-to-a-network-stream
+
 import io
 import socket
 import struct
