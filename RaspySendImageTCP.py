@@ -4,7 +4,7 @@ import io
 import socket
 import struct
 import time
-import picamera
+import cv2
 
 # Connect a client socket to my_server:8000 (change my_server to the
 # hostname of your server)
