@@ -93,7 +93,7 @@ if __name__ == '__main__':
         capture = cv2.VideoCapture(-1)
         
         # Make a file-like object out of the connection
-        connection = s.makefile('wb')
+#        connection = s.makefile('wb')
         if capture.isOpened(): # try to get the first frame
             frame_captured, frame = capture.read()
         else:
@@ -133,7 +133,7 @@ if __name__ == '__main__':
                     GPIO.output(rF,0)
                     GPIO.output(rR,0)
                 s.send(data)
-            markers = detect_markers(frame)
+ #           markers = detect_markers(frame)
 
             '''diagonal_vectors = []
             angles = []
