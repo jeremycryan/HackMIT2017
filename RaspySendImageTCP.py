@@ -63,7 +63,9 @@ finally:
     client_socket.close()
 
 def byte_string(frame):
-length = frame.shape[0] * frame.shape[1] * frame.shape[2]
-byte_length = [length/(256^3), length/(256^2), length/256, length%256]
-return chr(byte_length[0]) + chr(byte_length[1]) + 
-    chr(byte_length[2]) + chr(byte_length[3]) + frame.tobytes
+    byte_list = []
+    for x in frame:
+        for y in x:
+            for z in y:
+                byte_list.append(str(z))
+    byte_list = " ".join(byte_list)

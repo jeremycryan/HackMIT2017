@@ -69,6 +69,7 @@ if __name__ == '__main__':
     while frame_captured:
         markers = detect_markers(frame)
 
+        print frame
         diagonal_vectors = []
         angles = []
         positions = []
