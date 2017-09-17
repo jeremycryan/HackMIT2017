@@ -31,10 +31,10 @@ try:
 	    for i in data:
 		print(i)
 		if (str(i) == " "):
-			powerValues.append(curr)
-			curr = ""
+		    powerValues.append(curr)
+            	    curr = ""
 		else:
-			curr += str(i)
+	            curr += str(i)
             powerValues.append(curr)
             powerValues[0] = int(powerValues[0])
             powerValues[1] = int(powerValues[1])	

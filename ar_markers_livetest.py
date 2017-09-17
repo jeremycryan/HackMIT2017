@@ -3,6 +3,8 @@
 import cv2
 import numpy as np
 import math
+import socket
+import io
 
 from detect import detect_markers
 
@@ -12,7 +14,7 @@ CAM_ANGLE = -math.pi/6
 CAM_ROTATION = np.asarray([[1, 0, 0],
                           [0, math.cos(CAM_ANGLE), -math.sin(CAM_ANGLE)],
                           [0, math.sin(CAM_ANGLE), math.cos(CAM_ANGLE)]])
-CAM_VECTOR = np.matmul(CAM_ROTATION, np.asarray([[0], [1], [0]]))
+CAM_VECTOR = np.asarray([[0], [math.cos(CAM_ANGLE)], [math.sin(CAM_ANGLE)]])
 CAM_RATIO = 0.559/480.0
 CAM_VERT_ANGLE_RANGE = 480.0*CAM_RATIO # range of camera in radians, vertical
 CAM_HORIZ_ANGLE_RANGE = 640.0*CAM_RATIO
@@ -59,8 +61,23 @@ def angle_diff(a, b):
     else:
         return d2
 
+def multiply(matrix, vector):
+    output = [0, 0, 0]
+    output[0] = np.dot(matrix[0, :], vector)
+    output[1] = np.dot(matrix[1, :], vector)
+    output[2] = np.dot(matrix[2, :], vector)
+    return np.asarray([output]).T
+
 if __name__ == '__main__':
-    capture = cv2.VideoCapture(1)
+    stream = io.BytesIO()
+    capture = cv2.VideoCapture(-1)
+    # Connect a client socket to my_server:8000 (change my_server to the
+    # hostname of your server)
+    client_socket = socket.socket()
+    client_socket.connect(('169.254.130.102', 50000))
+
+    # Make a file-like object out of the connection
+    connection = client_socket.makefile('wb')
 
     if capture.isOpened(): # try to get the first frame
         frame_captured, frame = capture.read()
@@ -69,7 +86,6 @@ if __name__ == '__main__':
     while frame_captured:
         markers = detect_markers(frame)
 
-        print frame
         diagonal_vectors = []
         angles = []
         positions = []
@@ -89,7 +105,7 @@ if __name__ == '__main__':
             y_coord = -CAM_HEIGHT/slope
 
             transform = x_pixel_to_angle_transform(m.center[0])
-            direction_vec = np.matmul(transform, np.asarray([[0], [1], [0]]))
+            direction_vec = multiply(transform, np.asarray([[0], [1], [0]]))
             x_coord = direction_vec[0] * y_coord
             positions.append([x_coord, y_coord, 0])
 
@@ -100,5 +116,29 @@ if __name__ == '__main__':
 
         for marker in markers:
             marker.highlite_marker(frame)
-        cv2.imshow('Test Frame', frame)
-        frame_captured, frame = capture.read()
+#        cv2.imshow('Test Frame', frame)
+
+        number_of_tags = len(ids)
+
+        fin_strings = []
+
+        for index, idnum in enumerate(ids):
+            xpos = positions[index][0][0]
+            ypos = positions[index][1][0]
+            zpos = positions[index][2]
+            yaw = angles[index]
+            fin_str = " ".join([str(idnum), str(xpos), str(ypos), str(zpos), str(yaw)])
+            fin_strings.append(fin_str)
+
+        " ".join([str(number_of_tags)] + fin_strings)
+
+        print fin_strings
+
+        connection.write(" ".join(fin_strings))
+        connection.flush()
+
+        stream.seek(0)
+        connection.write(stream.read())
+
+        stream.seek(0)
+        stream.truncate()
