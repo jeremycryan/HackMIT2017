@@ -61,6 +61,13 @@ def angle_diff(a, b):
 
 if __name__ == '__main__':
     capture = cv2.VideoCapture(1)
+    # Connect a client socket to my_server:8000 (change my_server to the
+    # hostname of your server)
+    client_socket = socket.socket()
+    client_socket.connect(('169.254.130.102', 50001))
+
+    # Make a file-like object out of the connection
+    connection = client_socket.makefile('wb')
 
     if capture.isOpened(): # try to get the first frame
         frame_captured, frame = capture.read()
@@ -69,7 +76,6 @@ if __name__ == '__main__':
     while frame_captured:
         markers = detect_markers(frame)
 
-        print frame
         diagonal_vectors = []
         angles = []
         positions = []
@@ -102,3 +108,26 @@ if __name__ == '__main__':
             marker.highlite_marker(frame)
         cv2.imshow('Test Frame', frame)
         frame_captured, frame = capture.read()
+
+        number_of_tags = len(ids)
+
+        fin_strings = []
+
+        for index, idnum in enumerate(ids):
+            xpos = positions[index][0][0]
+            ypos = positions[index][1][0]
+            zpos = positions[index][2]
+            yaw = angles[index]
+            fin_str = " ".join([str(idnum), str(xpos), str(ypos), str(zpos), str(yaw)])
+            fin_strings.append(fin_str)
+
+        " ".join([str(number_of_tags)] + fin_strings)
+
+        connection.write(" ".join(fin_strings))
+        connection.flush()
+
+        stream.seek(0)
+        connection.write(stream.read())
+
+        stream.seek(0)
+        stream.truncate()
