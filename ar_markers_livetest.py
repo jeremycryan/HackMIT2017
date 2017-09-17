@@ -94,6 +94,9 @@ if __name__ == '__main__':
 
             ids.append(m.id)
 
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
         for marker in markers:
             marker.highlite_marker(frame)
         cv2.imshow('Test Frame', frame)
