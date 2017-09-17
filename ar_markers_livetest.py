@@ -69,12 +69,20 @@ def multiply(matrix, vector):
     return np.asarray([output]).T
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     stream = io.BytesIO()
     capture = cv2.VideoCapture(-1)
     # Connect a client socket to my_server:8000 (change my_server to the
     # hostname of your server)
     client_socket = socket.socket()
     client_socket.connect(('169.254.130.102', 50000))
+=======
+    capture = cv2.VideoCapture(1)
+    # Connect a client socket to my_server:8000 (change my_server to the
+    # hostname of your server)
+    client_socket = socket.socket()
+    client_socket.connect(('169.254.130.102', 50001))
+>>>>>>> 285369fc13fcd97aad977fe5e14a6f2a116106b9
 
     # Make a file-like object out of the connection
     connection = client_socket.makefile('wb')
@@ -116,7 +124,12 @@ if __name__ == '__main__':
 
         for marker in markers:
             marker.highlite_marker(frame)
+<<<<<<< HEAD
 #        cv2.imshow('Test Frame', frame)
+=======
+        cv2.imshow('Test Frame', frame)
+        frame_captured, frame = capture.read()
+>>>>>>> 285369fc13fcd97aad977fe5e14a6f2a116106b9
 
         number_of_tags = len(ids)
 
@@ -132,8 +145,11 @@ if __name__ == '__main__':
 
         " ".join([str(number_of_tags)] + fin_strings)
 
+<<<<<<< HEAD
         print fin_strings
 
+=======
+>>>>>>> 285369fc13fcd97aad977fe5e14a6f2a116106b9
         connection.write(" ".join(fin_strings))
         connection.flush()
 
