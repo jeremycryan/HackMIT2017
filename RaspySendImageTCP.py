@@ -5,6 +5,20 @@ import socket
 import struct
 import time
 import cv2
+import array
+
+def byte_string(frame):
+    data = []
+    for x in frame:
+        for y in x:
+            for z in y:
+                data.append(chr(z))
+    length = frame.shape[0] * frame.shape[1] * frame.shape[2]
+    byte_length = struct.pack('bbbb', *[(length%(256**4))/(256**3), (length%(256**3))/(256**2), (length%(256**2))/256, length%256])
+    length_array =  bytearray(byte_length)
+    data_array = bytearray(data)
+    print len(data_array + length_array)
+    return length_array + data_array
 
 # Connect a client socket to my_server:8000 (change my_server to the
 # hostname of your server)
@@ -14,7 +28,7 @@ client_socket.connect(('169.254.130.102', 50001))
 # Make a file-like object out of the connection
 connection = client_socket.makefile('wb')
 try:
-    capture = cv2.VideoCapture(1)
+    capture = cv2.VideoCapture(-1)
     # Start a preview and let the camera warm up for 2 seconds
 
 
@@ -31,7 +45,7 @@ try:
     while frame_captured:
 
 
-        connection.write(struct.pack('>L', byte_string(frame)))
+        connection.write(byte_string(frame))
         connection.flush()
 
         stream.seek(0)
@@ -58,14 +72,7 @@ try:
         #     stream.truncate()
     # Write a length of zero to the stream to signal we're done
     connection.write(struct.pack('<L', 0))
+    time.sleep(1000)
 finally:
     connection.close()
     client_socket.close()
-
-def byte_string(frame):
-    byte_list = []
-    for x in frame:
-        for y in x:
-            for z in y:
-                byte_list.append(str(z))
-    byte_list = " ".join(byte_list)
