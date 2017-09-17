@@ -5,9 +5,10 @@ import socket
 backlog = 1
 size = 1024
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(('127.0.0.1', 50000))
+print('trying to connect')
+s.connect(('10.182.5.29', 50000))
 try:
-    print ("is waiting")
+    print ("waiting")
 
     while 1:
         data = s.recv(size)
